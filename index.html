@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KIROLOS ERIAN | Portfolio</title>
+    <style>
+        ::-webkit-scrollbar { display: none; }
+        body, html { margin: 0; padding: 0; width: 100%; min-height: 100%; background-color: #010103; font-family: 'Segoe UI', sans-serif; color: #fff; overflow-x: hidden; scrollbar-width: none; }
+
+        #canvas { position: fixed; top: 0; left: 0; z-index: 1; opacity: 0.5; }
+
+        .wrapper { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; padding: 40px 15px; width: 100%; box-sizing: border-box; }
+
+        .profile-img {
+            width: 130px; height: 130px; border-radius: 20px;
+            border: 2px solid #00d4ff;
+            object-fit: cover; margin-bottom: 25px;
+            animation: shadowPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes shadowPulse {
+            0%, 1000% { box-shadow: 0 0 15px rgba(0, 212, 255, 0.3); }
+            50% { box-shadow: 0 0 35px rgba(0, 212, 255, 0.7); }
+        }
+
+        h1 { 
+            font-size: clamp(1.4rem, 6vw, 2.2rem); margin: 0; 
+            background: linear-gradient(90deg, #fff, #00d4ff, #fff); 
+            background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+            animation: textFlow 4s linear infinite; text-align: center;
+        }
+        @keyframes textFlow { to { background-position: 200% center; } }
+
+        .tagline { color: #00d4ff; letter-spacing: 3px; font-size: 0.8rem; margin: 10px 0 40px; text-transform: uppercase; font-weight: bold; text-align: center; }
+
+        .main-container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 30px; }
+
+        .card-wrapper {
+            position: relative; padding: 2.5px; border-radius: 24px;
+            overflow: hidden; display: flex; justify-content: center; align-items: center;
+        }
+
+        .card-wrapper::before, .card-wrapper::after {
+            content: ''; position: absolute; width: 200%; height: 600%;
+            background: conic-gradient(transparent, transparent, transparent, #00d4ff);
+            animation: rotate-snake 4s linear infinite;
+        }
+        .card-wrapper::after { animation-delay: -2s; }
+
+        @keyframes rotate-snake { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .card {
+            position: relative; z-index: 5; width: 100%; background: #010103;
+            border-radius: 22px; padding: 25px; box-sizing: border-box; backdrop-filter: blur(10px);
+        }
+
+        h2 { color: #00d4ff; margin: 0 0 15px; font-size: 1.1rem; border-bottom: 1px solid rgba(0, 212, 255, 0.1); padding-bottom: 10px; }
+        ul { padding-left: 18px; margin: 0; color: #ddd; font-size: 0.95rem; }
+        li { margin-bottom: 10px; line-height: 1.6; }
+
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
+        .tag { font-size: 0.7rem; padding: 5px 10px; border: 1px solid #00d4ff; border-radius: 6px; color: #00d4ff; }
+
+        /* Music Floating Button */
+        .music-player {
+            position: fixed; top: 20px; right: 20px; z-index: 100;
+            background: rgba(0, 212, 255, 0.1); border: 1px solid #00d4ff;
+            border-radius: 50%; width: 45px; height: 45px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.3s;
+        }
+        .music-player:hover { transform: scale(1.1); box-shadow: 0 0 15px #00d4ff; }
+
+        .social-column { display: flex; flex-direction: column; gap: 15px; margin-top: 40px; width: 100%; max-width: 320px; }
+        .social-link-item {
+            display: flex; align-items: center; gap: 15px; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.2); padding: 12px 20px; border-radius: 15px;
+            text-decoration: none; color: #fff; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .social-link-item:hover { background: rgba(0, 212, 255, 0.12); border-color: #00d4ff; transform: scale(1.05); }
+        .social-link-item svg { width: 24px; height: 24px; fill: #00d4ff; flex-shrink: 0; }
+        
+        .footer { margin-top: 40px; opacity: 0.4; font-size: 0.8rem; text-align: center; padding-bottom: 40px; }
+
+        /* التعديل المطلوب للمسافة في الموبايل */
+        @media (max-width: 480px) {
+            .tagline { letter-spacing: 1px; }
+            .re-text { font-size: 0; letter-spacing: 0; }
+            .re-text::before { 
+                content: "RE"; 
+                font-size: 0.8rem; 
+                letter-spacing: 1px; 
+                margin-right: -2px; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop autoplay>
+        <source src="mixkit-space-goddess-428.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="music-player" onclick="toggleMusic()" id="musicBtn">
+        <svg id="musicIcon" viewBox="0 0 24 24" width="24" height="24" fill="#00d4ff">
+            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+        </svg>
+    </div>
+
+    <canvas id="canvas"></canvas>
+    <div class="wrapper">
+        <img src="Screenshot 2025-11-27 130652.png" class="profile-img">
+
+        <h1>KIROLOS ERIAN WANES</h1>
+        <p class="tagline"><span class="re-text">REVERSE ENGINEER</span> • FRONT-END • QA • DESIGNER</p>
+
+        <div class="main-container">
+             <!-- كارت الفرونت إيند -->
+            <div class="card-wrapper">
+                <div class="card">
+                    <h2>Front-end & UI/UX Design</h2>
+                    <ul>
+                        <li>Building modern, high-performance web applications (HTML5, CSS3, JS ES6+).</li>
+                        <li>Responsive layouts with Cyberpunk and futuristic design systems.</li>
+                        <li>Crafting unique user experiences through CSS Animations and Figma.</li>
+                        <li>Integrating Firebase and backend logic for real-time applications.</li>
+                    </ul>
+                    <div class="tags">
+                        <span class="tag">HTML5</span><span class="tag">CSS3</span>
+                        <span class="tag">JavaScript</span><span class="tag">Figma</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- كارت الميديا والتصميم -->
+            <div class="card-wrapper">
+                <div class="card">
+                    <h2>Creative Design & Media</h2>
+                    <ul>
+                        <li>Professional <b>Logo Design</b> & Brand Identity (SAYCO Style).</li>
+                        <li>High-end <b>PowerPoint</b> presentations with cinematic animations and SFX.</li>
+                        <li>Custom Digital Invitations and specialized social cards for all events.</li>
+                        <li>Visual content creation with a focus on UI/UX aesthetics.</li>
+                    </ul>
+                    <div class="tags">
+                        <span class="tag">Canva Pro</span><span class="tag">PowerPoint</span>
+                        <span class="tag">Brand Identity</span><span class="tag">Animation</span>
+                    </div>
+                </div>
+            </div>
+            <!-- كارت الـ RE & Tools المعدل -->
+            <div class="card-wrapper">
+                 <div class="card">
+                    <h2>Reverse Engineering & Custom Tools</h2>
+                    <ul>
+                        <li>Building custom, high-performance <b>Security Tools</b> from scratch.</li>
+                        <li>Expertise in <b>Function Hooking</b> and redirection techniques.</li>
+                        <li>Developing advanced <b>Bypass</b> systems for security constraints.</li>
+                        <li>Binary analysis & memory mapping for mobile games (libil2cpp).</li>
+                        <li>Automating security tasks and RAM dumping using <b>Python & C++</b>.</li>
+                    </ul>
+                    <div class="tags">
+                        <span class="tag">Tool Dev</span><span class="tag">Hooking</span>
+                        <span class="tag">Bypass</span><span class="tag">Python</span>
+                        <span class="tag">C++</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- كارت الـ QA -->
+            <div class="card-wrapper">
+                <div class="card">
+                    <h2>Software Testing</h2>
+                    <ul>
+                        <li>Manual Software Testing to ensure 100% stability and performance.</li>
+                        <li>Developing custom QA tools to automate bug hunting processes.</li>
+                        <li>Analyzing software logic to detect vulnerabilities and edge cases.</li>
+                        <li>Detailed technical reporting and debugging orchestration.</li>
+                    </ul>
+                    <div class="tags">
+                        <span class="tag">QA</span><span class="tag">Manual Testing</span>
+                        <span class="tag">Debugging</span><span class="tag">Security</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="social-column">
+            <a href="https://github.com/KirolosArian/redmy" class="social-link-item" target="_blank">
+                <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.11.81 2.235 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                <span>GitHub Profile</span>
+            </a>
+
+            <a href="https://wa.me/201210458881" class="social-link-item" target="_blank">
+                <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                <span>WhatsApp</span>
+            </a>
+            <a href="https://t.me/SAYCooo" class="social-link-item" target="_blank">
+                <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.14-.26.26-.52.26l.196-2.91 5.297-4.78c.23-.204-.05-.318-.354-.113L6.46 13.23l-2.82-.882c-.614-.19-.626-.614.128-.91l11.02-4.25c.51-.186.956.118.79.91l.316.623z"/></svg>
+                <span>Telegram</span>
+            </a>
+            <a href="mailto:kirolos240101533@sut.edu.eg" class="social-link-item">
+                <svg viewBox="0 0 24 24"><path d="M12 12.713L24 5.287V18a2 2 0 01-2 2H2a2 2 0 01-2-2V5.287l12 7.426zm0-1.426l12-7.426V3a2 2 0 00-2-2H2a2 2 0 00-2 2v.86l12 7.427z"/></svg>
+                <span>Outlook</span>
+            </a>
+        </div>
+
+        <div class="footer">Learning To be GAME DEVELOPER</div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let w, h, cols, matrix = [];
+        const fontSize = 20;
+
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+            cols = Math.floor(w / fontSize) + 1;
+            for (let i = 0; i < cols; i++) if(matrix[i] === undefined) matrix[i] = Math.random() * -20;
+        }
+        window.addEventListener('resize', resize); resize();
+
+        function draw() {
+            ctx.fillStyle = 'rgba(1, 1, 3, 0.15)';
+            ctx.fillRect(0, 0, w, h);
+            ctx.fillStyle = '#00d4ff';
+            ctx.font = fontSize + 'px monospace';
+            for (let i = 0; i < cols; i++) {
+                const text = Math.floor(Math.random() * 2);
+                ctx.fillText(text, i * fontSize, matrix[i] * fontSize);
+                if (matrix[i] * fontSize > h && Math.random() > 0.975) matrix[i] = 0;
+                else matrix[i]++;
+            }
+        }
+        setInterval(draw, 80);
+
+        const audio = document.getElementById('bgMusic');
+        const musicIcon = document.getElementById('musicIcon');
+        
+        window.addEventListener('load', () => {
+            audio.play().then(() => {
+                musicIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+            }).catch((error) => {
+                console.log("Autoplay blocked by browser. Waiting for user interaction.");
+            });
+        });
+
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play();
+                musicIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+            } else {
+                audio.pause();
+                musicIcon.innerHTML = '<path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>';
+            }
+        }
+    </script>
+</body>
+</html>
